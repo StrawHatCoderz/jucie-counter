@@ -1,3 +1,5 @@
+import { client } from '../../src/db/db.js';
+
 const QUERY = `
 DROP TABLE IF EXISTS customer CASCADE;
 CREATE TABLE customer (
@@ -89,3 +91,16 @@ CREATE TABLE supplier (
   updated_at     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 `;
+
+await client.connect();
+
+const createTables = async (tablesQuery) => {
+	await client.queryObject(tablesQuery);
+};
+
+const main = async () => {
+	await createTables(QUERY);
+};
+
+await main();
+await client.end();
