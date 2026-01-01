@@ -15,16 +15,16 @@ CREATE TABLE orders (
   customer_id  INTEGER NOT NULL
     REFERENCES customer(customer_id) ON DELETE RESTRICT,
   order_date   TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  created_at   TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  total_amount NUMERIC(10,2) DEFAULT 0
-);
-DROP TABLE IF EXISTS ordered_items CASCADE;
-CREATE TABLE ordered_items (
-  order_id     INTEGER
+  created_at   TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  );
+  DROP TABLE IF EXISTS ordered_items CASCADE;
+  CREATE TABLE ordered_items (
+    order_id     INTEGER
     REFERENCES orders(order_id) ON DELETE CASCADE,
-  item_id      INTEGER
+    item_id      INTEGER
     REFERENCES menu(item_id) ON DELETE RESTRICT,
-  quantity     INTEGER NOT NULL CHECK (quantity > 0),
+    quantity     INTEGER NOT NULL CHECK (quantity > 0),
+    price_at_purchase NUMERIC(10,2) DEFAULT 0,
   created_at   TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   order_status VARCHAR(20) DEFAULT 'PENDING'
     CHECK (order_status IN ('PENDING', 'COMPLETED', 'CANCELLED')),
