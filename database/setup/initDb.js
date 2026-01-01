@@ -89,6 +89,12 @@ CREATE TABLE supplier (
 );
 `;
 
+export const csvParser = (lines) =>
+	lines
+		.trim()
+		.split('\n')
+		.map((line) => line.split(','));
+
 const createTables = async (database, tablesQuery) => {
 	await database.queryObject(tablesQuery);
 };
@@ -101,16 +107,12 @@ const insertValues = async (database, table, columns, rows) => {
 };
 
 const loadMockData = async (database, metaData) => {
-	const entries = await Deno.readTextFile(metaData)
-		.then((lines) => lines.trim())
-		.then((lines) => lines.split('\n'))
-		.then((lines) => lines.map((line) => line.split(',')));
+	const content = await Deno.readTextFile(metaData);
+	const entries = csvParser(content);
 
 	for (const [table, csvFile] of entries) {
-		const [columns, ...rows] = await Deno.readTextFile(csvFile)
-			.then((content) => content.trim())
-			.then((content) => content.split('\n'));
-
+		const content = await Deno.readTextFile(csvFile);
+		const [columns, ...rows] = csvParser(content);
 		await insertValues(database, table, columns, rows);
 	}
 };
