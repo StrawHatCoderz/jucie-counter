@@ -1,15 +1,5 @@
 item_name,item_type,item_price,isactive
-Mosambi,JUICE,30.00,true
-Lime,JUICE,30.00,true
-Water Melon,JUICE,35.00,true
-Papaya,JUICE,40.00,true
-Amla,JUICE,25.00,true
-Musk Melon,JUICE,35.00,true
-Ginger Mint Lime,JUICE,35.00,true
-Ginger Mint Amla,JUICE,35.00,true
-Sweet & Salt Lime Soda,JUICE,35.00,true
-Fruit Bowl,BOWL,50.00,true
-Lime Soda,JUICE,25.00,true
-Banana Shake,SHAKE,35.00,true
-Banana,RAW,10.00,true
-Pine Apple,JUICE,30.00,true
+'Water Melon Juice','JUICE',35,true
+'Lime Juice','JUICE',30,true
+'Banana Shake','SHAKE',40,true
+'Lime Soda','JUICE',25,true

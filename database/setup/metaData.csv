@@ -1,8 +1,8 @@
-customer,./database/mock-data/customer.csv
+supplier,./database/mock-data/supplier.csv
+raw_material,./database/mock-data/raw_material.csv
 inventory_batch,./database/mock-data/inventory_batch.csv
 menu,./database/mock-data/menu.csv
-ordered_items,./database/mock-data/ordered_items.csv
-orders,./database/mock-data/orders.csv
-raw_material,./database/mock-data/raw_material.csv
 recipe,./database/mock-data/recipe.csv
-supplier,./database/mock-data/supplier.csv
+customer,./database/mock-data/customer.csv
+orders,./database/mock-data/orders.csv
+ordered_items,./database/mock-data/ordered_items.csv

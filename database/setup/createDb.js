@@ -62,7 +62,6 @@ CREATE TABLE raw_material (
   ingredient_name     VARCHAR(100) NOT NULL,
   unit_type           VARCHAR(10) NOT NULL
     CHECK (unit_type IN ('KG', 'UNIT', 'ML')),
-  current_stock_level NUMERIC(10,2) DEFAULT 0,
   created_at          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   updated_at          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
