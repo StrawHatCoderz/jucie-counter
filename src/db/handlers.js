@@ -13,8 +13,13 @@ export const insertCustomer = async (
 	email,
 	phone_number
 ) => {
-	const query = insertNewCustomer(first_name, last_name, email, phone_number);
-	await database.queryArray(query);
+	const { query, values } = insertNewCustomer(
+		first_name,
+		last_name,
+		email,
+		phone_number
+	);
+	await database.query(query, values);
 };
 
 export const insertSupplier = async (
@@ -23,26 +28,31 @@ export const insertSupplier = async (
 	contact_number,
 	email
 ) => {
-	const query = insertNewSupplier(supplier_name, contact_number, email);
-	await database.queryArray(query);
+	const { query, values } = insertNewSupplier(
+		supplier_name,
+		contact_number,
+		email
+	);
+	await database.query(query, values);
 };
 
-const getPrice = (database, product_id) =>
-	database
-		.queryArray(getProductPrice(product_id))
-		.then((result) => result.rows[0][0])
-		.then(Number);
+const getPrice = async (database, product_id) => {
+	const { query, values } = getProductPrice(product_id);
+	const result = await database.query(query, values);
+	return Number(result.rows[0][0]);
+};
 
-const insertOrder = (database, customer_id) =>
-	database
-		.queryArray(insertNewOrder(customer_id))
-		.then((result) => result.rows[0][0])
-		.then(Number);
+const insertOrder = async (database, customer_id) => {
+	const { query, values } = insertNewOrder(customer_id);
+	const result = await database.query(query, values);
+	return Number(result.rows[0][0]);
+};
 
 const insertOrderedItems = async (database, order_id, products) => {
 	for (const { id, quantity } of products) {
 		const price = await getPrice(database, id);
-		await database.queryArray(insertOrderedItem(order_id, id, quantity, price));
+		const { query, values } = insertOrderedItem(order_id, id, quantity, price);
+		await database.query(query, values);
 	}
 };
 
