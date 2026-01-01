@@ -1,4 +1,6 @@
 import { Client } from 'jsr:@db/postgres';
+import { initDB } from '../../database/setup/initDb.js';
+import { insertCustomer } from './handlers.js';
 
 export const client = new Client({
 	user: Deno.env.get('PGUSER'),
@@ -7,3 +9,8 @@ export const client = new Client({
 	hostname: Deno.env.get('PGHOST'),
 	port: Deno.env.get('PGPORT'),
 });
+
+await client.connect();
+await initDB(client);
+await insertCustomer(client, 'Hawk', 'Eye', 'hawkEye@shiled.com', '8923222');
+await client.end();

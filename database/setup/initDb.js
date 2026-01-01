@@ -1,5 +1,3 @@
-import { client } from '../../src/db/db.js';
-
 const QUERY = `
 DROP TABLE IF EXISTS customer CASCADE;
 CREATE TABLE customer (
@@ -91,38 +89,33 @@ CREATE TABLE supplier (
 );
 `;
 
-await client.connect();
-
-const createTables = async (tablesQuery) => {
-	await client.queryObject(tablesQuery);
+const createTables = async (database, tablesQuery) => {
+	await database.queryObject(tablesQuery);
 };
 
-const insertValues = async (table, columns, rows) => {
+const insertValues = async (database, table, columns, rows) => {
 	const values = rows.map((row) => `(${row})`).join(',');
-	await client.queryArray(
+	await database.queryArray(
 		`INSERT INTO ${table} (${columns}) VALUES ${values};`
 	);
 };
 
-const loadMockData = async (metaData) => {
-	const entries = (await Deno.readTextFile(metaData))
-		.trim()
-		.split('\n')
-		.map((e) => e.split(','));
+const loadMockData = async (database, metaData) => {
+	const entries = await Deno.readTextFile(metaData)
+		.then((lines) => lines.trim())
+		.then((lines) => lines.split('\n'))
+		.then((lines) => lines.map((line) => line.split(',')));
 
 	for (const [table, csvFile] of entries) {
 		const [columns, ...rows] = await Deno.readTextFile(csvFile)
 			.then((content) => content.trim())
 			.then((content) => content.split('\n'));
 
-		await insertValues(table, columns, rows);
+		await insertValues(database, table, columns, rows);
 	}
 };
 
-const main = async () => {
-	await createTables(QUERY);
-	await loadMockData('./database/setup/metaData.csv');
+export const initDB = async (database) => {
+	await createTables(database, QUERY);
+	await loadMockData(database, './database/setup/metaData.csv');
 };
-
-await main();
-await client.end();
