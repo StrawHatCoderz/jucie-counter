@@ -1,6 +1,6 @@
 import { Client } from 'jsr:@db/postgres';
 import { initDB } from '../../database/setup/initDb.js';
-import { insertCustomer, insertSupplier } from './handlers.js';
+import { createOrder, insertCustomer, insertSupplier } from './handlers.js';
 
 export const client = new Client({
 	user: Deno.env.get('PGUSER'),
@@ -19,4 +19,8 @@ await insertSupplier(
 	'31256745',
 	'hmmilkproducts@boys.com'
 );
+await createOrder(client, 1, [
+	{ id: 1, quantity: 1 },
+	{ id: 2, quantity: 1 },
+]);
 await client.end();
