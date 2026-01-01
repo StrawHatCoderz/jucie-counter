@@ -97,8 +97,31 @@ const createTables = async (tablesQuery) => {
 	await client.queryObject(tablesQuery);
 };
 
+const insertValues = async (table, columns, rows) => {
+	const values = rows.map((row) => `(${row})`).join(',');
+	await client.queryArray(
+		`INSERT INTO ${table} (${columns}) VALUES ${values};`
+	);
+};
+
+const loadMockData = async (metaData) => {
+	const entries = (await Deno.readTextFile(metaData))
+		.trim()
+		.split('\n')
+		.map((e) => e.split(','));
+
+	for (const [table, csvFile] of entries) {
+		const [columns, ...rows] = await Deno.readTextFile(csvFile)
+			.then((content) => content.trim())
+			.then((content) => content.split('\n'));
+
+		await insertValues(table, columns, rows);
+	}
+};
+
 const main = async () => {
 	await createTables(QUERY);
+	await loadMockData('./database/setup/metaData.csv');
 };
 
 await main();
