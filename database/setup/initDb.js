@@ -59,7 +59,8 @@ CREATE TABLE raw_material (
   ingredient_id       SERIAL PRIMARY KEY,
   ingredient_name     VARCHAR(100) NOT NULL,
   unit_type           VARCHAR(10) NOT NULL
-    CHECK (unit_type IN ('KG', 'UNIT', 'ML')),
+  CHECK (unit_type IN ('KG', 'UNIT', 'ML')),
+  current_stock NUMERIC(10,2) NOT NULL,
   created_at          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   updated_at          TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
@@ -74,9 +75,7 @@ CREATE TABLE inventory_batch (
   cost_price         NUMERIC(10,2) NOT NULL CHECK (cost_price >= 0),
   received_at        TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   expiry_date        DATE NOT NULL,
-  created_at         TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  quantity_remaining NUMERIC(10,2) NOT NULL
-    CHECK (quantity_remaining >= 0)
+  created_at         TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 DROP TABLE IF EXISTS supplier CASCADE;
 CREATE TABLE supplier (

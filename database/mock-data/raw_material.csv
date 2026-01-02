@@ -1,9 +1,9 @@
-ingredient_name,unit_type
-'Water Melon','UNIT'
-'Lime','UNIT'
-'Sugar','KG'
-'Salt','KG'
-'Mint','UNIT'
-'Ginger','KG'
-'Milk','ML'
-'Banana','UNIT'
+ingredient_name,unit_type,current_stock
+'Water Melon','UNIT',40.00
+'Lime','UNIT',85.00
+'Sugar','KG',4.50
+'Salt','KG',1.80
+'Mint','UNIT',180.00
+'Ginger','KG',2.60
+'Milk','ML',4200.00
+'Banana','UNIT',90.00

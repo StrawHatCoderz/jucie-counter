@@ -19,7 +19,7 @@ export const insertCustomer = async (
 		email,
 		phone_number
 	);
-	await database.query(query, values);
+	await database.queryArray(query, values);
 };
 
 export const insertSupplier = async (
@@ -33,18 +33,18 @@ export const insertSupplier = async (
 		contact_number,
 		email
 	);
-	await database.query(query, values);
+	await database.queryArray(query, values);
 };
 
 const getPrice = async (database, product_id) => {
 	const { query, values } = getProductPrice(product_id);
-	const result = await database.query(query, values);
+	const result = await database.queryArray(query, values);
 	return Number(result.rows[0][0]);
 };
 
 const insertOrder = async (database, customer_id) => {
 	const { query, values } = insertNewOrder(customer_id);
-	const result = await database.query(query, values);
+	const result = await database.queryArray(query, values);
 	return Number(result.rows[0][0]);
 };
 
@@ -52,7 +52,7 @@ const insertOrderedItems = async (database, order_id, products) => {
 	for (const { id, quantity } of products) {
 		const price = await getPrice(database, id);
 		const { query, values } = insertOrderedItem(order_id, id, quantity, price);
-		await database.query(query, values);
+		await database.queryArray(query, values);
 	}
 };
 
