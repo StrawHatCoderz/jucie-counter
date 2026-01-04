@@ -31,3 +31,29 @@ export const insertOrderedItem = (order_id, product_id, quantity, price) => ({
          VALUES($1, $2, $3, $4)`,
 	values: [order_id, product_id, quantity, price],
 });
+
+export const TRANSACTIONS = {
+	begin: `BEGIN`,
+	commit: `COMMIT`,
+	rollback: `ROLLBACK`,
+};
+
+export const deductRawMaterialsForOrder = (order_id) => ({
+	query: `
+    UPDATE raw_material rm
+    SET current_stock = rm.current_stock - r.required_quantity
+    FROM recipe r
+    JOIN ordered_items oi USING(item_id)
+    WHERE oi.order_id = $1 AND rm.ingredient_id = r.ingredient_id
+  `,
+	values: [order_id],
+});
+
+export const markOrderCompleted = (order_id) => ({
+	query: `
+    UPDATE ordered_items
+    SET order_status = 'COMPLETED'
+    WHERE order_id = $1;
+  `,
+	values: [order_id],
+});

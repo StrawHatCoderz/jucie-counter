@@ -4,6 +4,9 @@ import {
 	insertNewSupplier,
 	insertNewOrder,
 	insertOrderedItem,
+	deductRawMaterialsForOrder,
+	markOrderCompleted,
+	TRANSACTIONS,
 } from './queries.js';
 
 export const insertCustomer = async (
@@ -59,4 +62,27 @@ const insertOrderedItems = async (database, order_id, products) => {
 export const createOrder = async (database, customer_id, products) => {
 	const order_id = await insertOrder(database, customer_id);
 	await insertOrderedItems(database, order_id, products);
+};
+
+const updateRawMaterials = async (database, order_id) => {
+	const { query, values } = deductRawMaterialsForOrder(order_id);
+	await database.queryArray(query, values);
+};
+
+const updateOrderStatus = async (database, order_id) => {
+	const { query, values } = markOrderCompleted(order_id);
+	await database.queryArray(query, values);
+};
+const rollbackAndThrow = (database) => (error) => {
+	console.error('Transaction failed, rolling back:', error);
+	return database.queryArray(TRANSACTIONS.rollback);
+};
+
+export const processOrder = (database, order_id) => {
+	return database
+		.queryArray(TRANSACTIONS.begin)
+		.then(() => updateRawMaterials(database, order_id))
+		.then(() => updateOrderStatus(database, order_id))
+		.then(() => database.queryArray(TRANSACTIONS.commit))
+		.catch(rollbackAndThrow(database));
 };
