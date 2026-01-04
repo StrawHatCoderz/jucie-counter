@@ -7,6 +7,7 @@ import {
 	deductRawMaterialsForOrder,
 	markOrderCompleted,
 	TRANSACTIONS,
+	addNewMenuItem,
 } from './queries.js';
 
 export const insertCustomer = async (
@@ -90,4 +91,9 @@ export const processOrder = (database, order_id) => {
 		.then(() => updateOrderStatus(database, order_id))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
 		.catch(rollbackAndHandleError(database, 'Processing Order'));
+};
+
+export const addMenuItem = async (database, name, type, price) => {
+	const { query, values } = addNewMenuItem(name, type, price);
+	await database.queryArray(query, values);
 };
