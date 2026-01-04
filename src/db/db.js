@@ -6,6 +6,7 @@ import {
 	insertCustomer,
 	insertSupplier,
 	processOrder,
+	addNewRawMaterial,
 } from './handlers.js';
 
 export const client = new Client({
@@ -31,4 +32,5 @@ await createOrder(client, 1, [
 ]);
 await processOrder(client, 4);
 await addMenuItem(client, 'Mosambi', 'JUICE', 30);
+await addNewRawMaterial(client, 'Sapota', 'UNIT');
 await client.end();

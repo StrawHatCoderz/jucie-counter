@@ -58,7 +58,12 @@ export const markOrderCompleted = (order_id) => ({
 	values: [order_id],
 });
 
-export const addNewMenuItem = (name, type, price) => ({
+export const insertMenuItem = (name, type, price) => ({
 	query: `INSERT INTO menu(item_name,item_type,item_price) VALUES($1, $2, $3)`,
 	values: [name, type, price],
+});
+
+export const insertRawMaterial = (name, unit_type) => ({
+	query: `INSERT INTO raw_material(ingredient_name, unit_type) VALUES($1, $2);`,
+	values: [name, unit_type],
 });

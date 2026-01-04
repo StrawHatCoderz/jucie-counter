@@ -7,7 +7,8 @@ import {
 	deductRawMaterialsForOrder,
 	markOrderCompleted,
 	TRANSACTIONS,
-	addNewMenuItem,
+	insertMenuItem,
+	insertRawMaterial,
 } from './queries.js';
 
 export const insertCustomer = async (
@@ -94,6 +95,11 @@ export const processOrder = (database, order_id) => {
 };
 
 export const addMenuItem = async (database, name, type, price) => {
-	const { query, values } = addNewMenuItem(name, type, price);
+	const { query, values } = insertMenuItem(name, type, price);
+	await database.queryArray(query, values);
+};
+
+export const addNewRawMaterial = async (database, name, unit_type) => {
+	const { query, values } = insertRawMaterial(name, unit_type);
 	await database.queryArray(query, values);
 };
