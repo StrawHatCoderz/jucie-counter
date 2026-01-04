@@ -59,9 +59,18 @@ const insertOrderedItems = async (database, order_id, products) => {
 	}
 };
 
-export const createOrder = async (database, customer_id, products) => {
-	const order_id = await insertOrder(database, customer_id);
-	await insertOrderedItems(database, order_id, products);
+const rollbackAndHandleError = (database, process) => (error) => {
+	console.error(`Transaction failed in ${process}, rolling back: ${error}`);
+	return database.queryArray(TRANSACTIONS.rollback);
+};
+
+export const createOrder = (database, customer_id, products) => {
+	return database
+		.queryArray(TRANSACTIONS.begin)
+		.then(() => insertOrder(database, customer_id))
+		.then((order_id) => insertOrderedItems(database, order_id, products))
+		.then(() => database.queryArray(TRANSACTIONS.commit))
+		.catch(rollbackAndHandleError(database, 'Creating Order'));
 };
 
 const updateRawMaterials = async (database, order_id) => {
@@ -73,10 +82,6 @@ const updateOrderStatus = async (database, order_id) => {
 	const { query, values } = markOrderCompleted(order_id);
 	await database.queryArray(query, values);
 };
-const rollbackAndThrow = (database) => (error) => {
-	console.error('Transaction failed, rolling back:', error);
-	return database.queryArray(TRANSACTIONS.rollback);
-};
 
 export const processOrder = (database, order_id) => {
 	return database
@@ -84,5 +89,5 @@ export const processOrder = (database, order_id) => {
 		.then(() => updateRawMaterials(database, order_id))
 		.then(() => updateOrderStatus(database, order_id))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
-		.catch(rollbackAndThrow(database));
+		.catch(rollbackAndHandleError(database, 'Processing Order'));
 };
