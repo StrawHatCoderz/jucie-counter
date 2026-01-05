@@ -48,7 +48,7 @@ CREATE TABLE recipe (
     REFERENCES menu(item_id) ON DELETE CASCADE,
   ingredient_id     INTEGER
     REFERENCES raw_material(ingredient_id) ON DELETE RESTRICT,
-  required_quantity NUMERIC(10,2) NOT NULL CHECK (required_quantity > 0),
+  required_quantity NUMERIC(10,4) NOT NULL CHECK (required_quantity > 0),
   created_at        TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   updated_at        TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 

@@ -59,7 +59,7 @@ export const markOrderCompleted = (order_id) => ({
 });
 
 export const insertMenuItem = (name, type, price) => ({
-	query: `INSERT INTO menu(item_name,item_type,item_price) VALUES($1, $2, $3)`,
+	query: `INSERT INTO menu(item_name,item_type,item_price) VALUES($1, $2, $3) RETURNING item_id`,
 	values: [name, type, price],
 });
 
@@ -92,7 +92,7 @@ export const insertNewBatchesIntoInventory = (batches) => {
       cost_price, 
       expiry_date
     ) 
-    VALUES ${placeholders.join(',')}
+    VALUES ${placeholders.join(', ')}
 		RETURNING batch_id
   `;
 
@@ -109,3 +109,20 @@ export const updateNewStockIntoRawMaterials = (batch_id) => ({
   `,
 	values: [batch_id],
 });
+
+export const insertRecipe = (ingredients_needed, itemId) => {
+	const placeholders = [];
+	const values = [];
+
+	ingredients_needed.forEach(({ id, quantity }, index) => {
+		const offset = index * 3;
+		placeholders.push(`($${offset + 1}, $${offset + 2}, $${offset + 3})`);
+		values.push(itemId, id, quantity);
+	});
+
+	return {
+		query: `INSERT INTO recipe (item_id, ingredient_id, required_quantity) 
+            VALUES ${placeholders.join(', ')};`,
+		values,
+	};
+};

@@ -8,6 +8,7 @@ import {
 	processOrder,
 	addNewRawMaterial,
 	processInventory,
+	addNewMenuItem,
 } from './handlers.js';
 
 export const client = new Client({
@@ -32,7 +33,6 @@ await createOrder(client, 1, [
 	{ id: 2, quantity: 1 },
 ]);
 await processOrder(client, 4);
-await addMenuItem(client, 'Mosambi', 'JUICE', 30);
 await addNewRawMaterial(client, 'Sapota', 'UNIT');
 const batches = [
 	{
@@ -51,4 +51,15 @@ const batches = [
 	},
 ];
 await processInventory(client, batches);
+const newMenuItem = {
+	name: 'Sapota',
+	type: 'JUICE',
+	price: 30.0,
+	ingredients_needed: [
+		{ id: 9, quantity: 1 },
+		{ id: 3, quantity: 0.002 },
+	],
+};
+await addMenuItem(client, newMenuItem);
+await addNewMenuItem(client, newMenuItem);
 await client.end();

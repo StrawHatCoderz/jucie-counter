@@ -11,6 +11,7 @@ import {
 	insertRawMaterial,
 	insertNewBatchesIntoInventory,
 	updateNewStockIntoRawMaterials,
+	insertRecipe,
 } from './queries.js';
 
 export const insertCustomer = async (
@@ -96,11 +97,6 @@ export const processOrder = (database, order_id) => {
 		.catch(rollbackAndHandleError(database, 'Processing Order'));
 };
 
-export const addMenuItem = async (database, name, type, price) => {
-	const { query, values } = insertMenuItem(name, type, price);
-	await database.queryArray(query, values);
-};
-
 export const addNewRawMaterial = async (database, name, unit_type) => {
 	const { query, values } = insertRawMaterial(name, unit_type);
 	await database.queryArray(query, values);
@@ -126,3 +122,22 @@ export const processInventory = (database, batches) =>
 		.then((batchIds) => addStockIntoRawMaterials(database, batchIds))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
 		.catch(rollbackAndHandleError(database, 'Processing Inventory'));
+
+export const addMenuItem = async (database, { name, type, price }) => {
+	const { query, values } = insertMenuItem(name, type, price);
+	const result = await database.queryArray(query, values);
+	return result.rows[0][0];
+};
+
+export const addRecipe = async (database, { ingredients_needed }, itemId) => {
+	const { query, values } = insertRecipe(ingredients_needed, itemId);
+	await database.queryArray(query, values);
+};
+
+export const addNewMenuItem = (database, menuItem) =>
+	database
+		.queryArray(TRANSACTIONS.begin)
+		.then(() => addMenuItem(database, menuItem))
+		.then((itemId) => addRecipe(database, menuItem, itemId))
+		.then(() => database.queryArray(TRANSACTIONS.commit))
+		.catch(rollbackAndHandleError(database, 'Adding Menu'));
