@@ -7,6 +7,7 @@ import {
 	insertSupplier,
 	processOrder,
 	addNewRawMaterial,
+	processInventory,
 } from './handlers.js';
 
 export const client = new Client({
@@ -33,4 +34,21 @@ await createOrder(client, 1, [
 await processOrder(client, 4);
 await addMenuItem(client, 'Mosambi', 'JUICE', 30);
 await addNewRawMaterial(client, 'Sapota', 'UNIT');
+const batches = [
+	{
+		ingredient_id: 7,
+		supplier_id: 3,
+		quantity_received: 2000,
+		cost_price: 140,
+		expiry_date: 20,
+	},
+	{
+		ingredient_id: 9,
+		supplier_id: 1,
+		quantity_received: 50,
+		cost_price: 200,
+		expiry_date: 6,
+	},
+];
+await processInventory(client, batches);
 await client.end();

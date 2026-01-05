@@ -67,3 +67,45 @@ export const insertRawMaterial = (name, unit_type) => ({
 	query: `INSERT INTO raw_material(ingredient_name, unit_type) VALUES($1, $2);`,
 	values: [name, unit_type],
 });
+
+export const insertNewBatchesIntoInventory = (batches) => {
+	const placeholders = batches.map((_, index) => {
+		const offset = index * 5;
+		return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${
+			offset + 4
+		}, CURRENT_DATE + ($${offset + 5} || ' days')::interval)`;
+	});
+
+	const values = batches.flatMap((batch) => [
+		batch.ingredient_id,
+		batch.supplier_id,
+		batch.quantity_received,
+		batch.cost_price,
+		batch.expiry_date,
+	]);
+
+	const query = `
+    INSERT INTO inventory_batch (
+      ingredient_id, 
+      supplier_id, 
+      quantity_received, 
+      cost_price, 
+      expiry_date
+    ) 
+    VALUES ${placeholders.join(',')}
+		RETURNING batch_id
+  `;
+
+	return { query, values };
+};
+
+export const updateNewStockIntoRawMaterials = (batch_id) => ({
+	query: `
+    UPDATE raw_material rm
+		SET current_stock = rm.current_stock + ib.quantity_received
+		FROM inventory_batch ib
+		WHERE rm.ingredient_id = ib.ingredient_id
+  	AND ib.batch_id = $1;
+  `,
+	values: [batch_id],
+});

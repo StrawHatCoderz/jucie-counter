@@ -9,6 +9,8 @@ import {
 	TRANSACTIONS,
 	insertMenuItem,
 	insertRawMaterial,
+	insertNewBatchesIntoInventory,
+	updateNewStockIntoRawMaterials,
 } from './queries.js';
 
 export const insertCustomer = async (
@@ -103,3 +105,24 @@ export const addNewRawMaterial = async (database, name, unit_type) => {
 	const { query, values } = insertRawMaterial(name, unit_type);
 	await database.queryArray(query, values);
 };
+
+export const addNewInventoryBatch = async (database, batches) => {
+	const { query, values } = insertNewBatchesIntoInventory(batches);
+	const result = await database.queryArray(query, values);
+	return result.rows.flatMap((x) => x);
+};
+
+export const addStockIntoRawMaterials = async (database, batchIds) => {
+	for (const batchId of batchIds) {
+		const { query, values } = updateNewStockIntoRawMaterials(batchId);
+		await database.queryArray(query, values);
+	}
+};
+
+export const processInventory = (database, batches) =>
+	database
+		.queryArray(TRANSACTIONS.begin)
+		.then(() => addNewInventoryBatch(database, batches))
+		.then((batchIds) => addStockIntoRawMaterials(database, batchIds))
+		.then(() => database.queryArray(TRANSACTIONS.commit))
+		.catch(rollbackAndHandleError(database, 'Processing Inventory'));
