@@ -22,7 +22,7 @@ const handleError = (error) => {
 	console.error(`Query failed, ${error}`);
 };
 
-export const insertCustomer = async (
+export const insertCustomer = (
 	database,
 	first_name,
 	last_name,
@@ -41,7 +41,7 @@ export const insertCustomer = async (
 		.catch((error) => handleError(error));
 };
 
-export const insertSupplier = async (
+export const insertSupplier = (
 	database,
 	supplier_name,
 	contact_number,

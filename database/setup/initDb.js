@@ -25,10 +25,10 @@ CREATE TABLE orders (
     REFERENCES menu(item_id) ON DELETE RESTRICT,
     quantity     INTEGER NOT NULL CHECK (quantity > 0),
     price_at_purchase NUMERIC(10,2) DEFAULT 0,
-  created_at   TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  order_status VARCHAR(20) DEFAULT 'PENDING'
-    CHECK (order_status IN ('PENDING', 'COMPLETED', 'CANCELLED')),
-  PRIMARY KEY (order_id, item_id)
+    order_status VARCHAR(20) DEFAULT 'PENDING'
+      CHECK (order_status IN ('PENDING', 'COMPLETED', 'CANCELLED')),
+    created_at   TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (order_id, item_id)
 );
 DROP TABLE IF EXISTS menu CASCADE;
 CREATE TABLE menu (
