@@ -1,5 +1,5 @@
 item_name,item_type,item_price,isactive
-'Water Melon Juice','JUICE',35,true
-'Lime Juice','JUICE',30,true
-'Banana Shake','SHAKE',40,true
+'Water Melon','JUICE',35,true
+'Lime','JUICE',30,true
+'Banana','SHAKE',40,true
 'Lime Soda','JUICE',25,true

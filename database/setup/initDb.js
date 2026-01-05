@@ -103,7 +103,6 @@ const insertValues = async (database, table, columns, rows) => {
 	await database.queryArray(
 		`INSERT INTO ${table} (${columns}) VALUES ${values};`
 	);
-	console.log('Sucuessfully inserted into:', table);
 };
 
 const loadMockData = async (database, metaData) => {

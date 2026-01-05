@@ -1,5 +1,3 @@
-import { Client } from 'jsr:@db/postgres';
-import { initDB } from '../../database/setup/initDb.js';
 import {
 	createOrder,
 	insertCustomer,
@@ -10,30 +8,7 @@ import {
 	addNewMenuItem,
 } from './handlers.js';
 
-export const client = new Client({
-	user: Deno.env.get('PGUSER'),
-	password: Deno.env.get('PGPASSWORD'),
-	database: Deno.env.get('PGDATABASE'),
-	hostname: Deno.env.get('PGHOST'),
-	port: Deno.env.get('PGPORT'),
-});
-
-await client.connect();
-await initDB(client);
-await insertCustomer(client, 'Hawk', 'Eye', 'hawkEye@shiled.com', '8923222');
-await insertSupplier(
-	client,
-	'HL Milk Products',
-	'31256745',
-	'hmmilkproducts@boys.com'
-);
-await createOrder(client, 1, [
-	{ id: 1, quantity: 1 },
-	{ id: 2, quantity: 1 },
-]);
-await processOrder(client, 4);
-await addNewRawMaterial(client, 'Sapota', 'UNIT');
-const batches = [
+const BATCHES = [
 	{
 		ingredient_id: 7,
 		supplier_id: 3,
@@ -49,8 +24,7 @@ const batches = [
 		expiry_date: 6,
 	},
 ];
-await processInventory(client, batches);
-const newMenuItem = {
+const NEW_MENU_ITEM = {
 	name: 'Sapota',
 	type: 'JUICE',
 	price: 30.0,
@@ -59,5 +33,21 @@ const newMenuItem = {
 		{ id: 3, quantity: 0.002 },
 	],
 };
-await addNewMenuItem(client, newMenuItem);
-await client.end();
+
+export const testDB = async (client) => {
+	await insertCustomer(client, 'Hawk', 'Eye', 'hawkEye@shiled.com', '8923222');
+	await insertSupplier(
+		client,
+		'HL Milk Products',
+		'31256745',
+		'hmmilkproducts@boys.com'
+	);
+	await createOrder(client, 1, [
+		{ id: 1, quantity: 1 },
+		{ id: 2, quantity: 1 },
+	]);
+	await processOrder(client, 4);
+	await addNewRawMaterial(client, 'Sapota', 'UNIT');
+	await processInventory(client, BATCHES);
+	await addNewMenuItem(client, NEW_MENU_ITEM);
+};

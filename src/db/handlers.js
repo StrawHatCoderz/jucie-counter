@@ -88,7 +88,7 @@ export const createOrder = (database, customer_id, products) => {
 		.queryArray(TRANSACTIONS.begin)
 		.then(() => insertOrder(database, customer_id))
 		.then((order_id) => insertOrderedItems(database, order_id, products))
-		.then(() => displayFeedback('CREATED order', 'order'))
+		.then(() => displayFeedback('Created order', 'order'))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
 		.catch(rollbackAndHandleError(database, 'Creating Order'));
 };
@@ -162,3 +162,8 @@ export const addNewMenuItem = (database, menuItem) =>
 		.then(() => displayFeedback('INSERTED values', 'menu'))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
 		.catch(rollbackAndHandleError(database, 'Adding Menu'));
+
+export const getProducts = (database) =>
+	database
+		.queryObject(`SELECT * FROM menu ORDER BY item_id;`)
+		.then((x) => x.rows);
