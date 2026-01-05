@@ -14,6 +14,14 @@ import {
 	insertRecipe,
 } from './queries.js';
 
+const displayFeedback = (process, table) => {
+	console.log(`${table}: Sucuessfully ${process}`);
+};
+
+const handleError = (error) => {
+	console.error(`Query failed, ${error}`);
+};
+
 export const insertCustomer = async (
 	database,
 	first_name,
@@ -27,7 +35,10 @@ export const insertCustomer = async (
 		email,
 		phone_number
 	);
-	await database.queryArray(query, values);
+	return database
+		.queryArray(query, values)
+		.then(() => displayFeedback('INSERTED Values', 'customer'))
+		.catch((error) => handleError(error));
 };
 
 export const insertSupplier = async (
@@ -41,7 +52,10 @@ export const insertSupplier = async (
 		contact_number,
 		email
 	);
-	await database.queryArray(query, values);
+	return database
+		.queryArray(query, values)
+		.then(() => displayFeedback('INSERTED Values', 'supplier'))
+		.catch((error) => handleError(error));
 };
 
 const getPrice = async (database, product_id) => {
@@ -74,6 +88,7 @@ export const createOrder = (database, customer_id, products) => {
 		.queryArray(TRANSACTIONS.begin)
 		.then(() => insertOrder(database, customer_id))
 		.then((order_id) => insertOrderedItems(database, order_id, products))
+		.then(() => displayFeedback('CREATED order', 'order'))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
 		.catch(rollbackAndHandleError(database, 'Creating Order'));
 };
@@ -93,22 +108,26 @@ export const processOrder = (database, order_id) => {
 		.queryArray(TRANSACTIONS.begin)
 		.then(() => updateRawMaterials(database, order_id))
 		.then(() => updateOrderStatus(database, order_id))
+		.then(() => displayFeedback('PROCESSED order', 'order'))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
 		.catch(rollbackAndHandleError(database, 'Processing Order'));
 };
 
-export const addNewRawMaterial = async (database, name, unit_type) => {
+export const addNewRawMaterial = (database, name, unit_type) => {
 	const { query, values } = insertRawMaterial(name, unit_type);
-	await database.queryArray(query, values);
+	return database
+		.queryArray(query, values)
+		.then(() => displayFeedback('INSERTED Values', 'raw materials'))
+		.catch((error) => handleError(error));
 };
 
-export const addNewInventoryBatch = async (database, batches) => {
+const addNewInventoryBatch = async (database, batches) => {
 	const { query, values } = insertNewBatchesIntoInventory(batches);
 	const result = await database.queryArray(query, values);
 	return result.rows.flatMap((x) => x);
 };
 
-export const addStockIntoRawMaterials = async (database, batchIds) => {
+const addStockIntoRawMaterials = async (database, batchIds) => {
 	for (const batchId of batchIds) {
 		const { query, values } = updateNewStockIntoRawMaterials(batchId);
 		await database.queryArray(query, values);
@@ -120,16 +139,17 @@ export const processInventory = (database, batches) =>
 		.queryArray(TRANSACTIONS.begin)
 		.then(() => addNewInventoryBatch(database, batches))
 		.then((batchIds) => addStockIntoRawMaterials(database, batchIds))
+		.then(() => displayFeedback('PROCESSED Inventory', 'Inventory'))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
 		.catch(rollbackAndHandleError(database, 'Processing Inventory'));
 
-export const addMenuItem = async (database, { name, type, price }) => {
+const addMenuItem = async (database, { name, type, price }) => {
 	const { query, values } = insertMenuItem(name, type, price);
 	const result = await database.queryArray(query, values);
 	return result.rows[0][0];
 };
 
-export const addRecipe = async (database, { ingredients_needed }, itemId) => {
+const addRecipe = async (database, { ingredients_needed }, itemId) => {
 	const { query, values } = insertRecipe(ingredients_needed, itemId);
 	await database.queryArray(query, values);
 };
@@ -139,5 +159,6 @@ export const addNewMenuItem = (database, menuItem) =>
 		.queryArray(TRANSACTIONS.begin)
 		.then(() => addMenuItem(database, menuItem))
 		.then((itemId) => addRecipe(database, menuItem, itemId))
+		.then(() => displayFeedback('INSERTED values', 'menu'))
 		.then(() => database.queryArray(TRANSACTIONS.commit))
 		.catch(rollbackAndHandleError(database, 'Adding Menu'));

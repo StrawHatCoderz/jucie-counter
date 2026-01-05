@@ -1,7 +1,6 @@
 import { Client } from 'jsr:@db/postgres';
 import { initDB } from '../../database/setup/initDb.js';
 import {
-	addMenuItem,
 	createOrder,
 	insertCustomer,
 	insertSupplier,
@@ -60,6 +59,5 @@ const newMenuItem = {
 		{ id: 3, quantity: 0.002 },
 	],
 };
-await addMenuItem(client, newMenuItem);
 await addNewMenuItem(client, newMenuItem);
 await client.end();
