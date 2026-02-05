@@ -1,18 +1,18 @@
-export const insertNewCustomer = (
-	first_name,
-	last_name,
+export const insertNewCustomer = ({
+	firstName,
+	lastName,
 	email,
-	phone_number
-) => ({
-	query: `INSERT INTO customer(first_name, last_name, email, phone_number) 
+	phoneNumber,
+}) => ({
+	query: `INSERT INTO customer(first_name, last_name, email, phone_number)
          VALUES($1, $2, $3, $4)`,
-	values: [first_name, last_name, email, phone_number],
+	values: [firstName, lastName, email, phoneNumber],
 });
 
-export const insertNewSupplier = (supplier_name, contact_number, email) => ({
-	query: `INSERT INTO supplier(supplier_name, contact_number, email) 
+export const insertNewSupplier = ({ supplierName, contactNumber, email }) => ({
+	query: `INSERT INTO supplier(supplier_name, contact_number, email)
          VALUES($1, $2, $3)`,
-	values: [supplier_name, contact_number, email],
+	values: [supplierName, contactNumber, email],
 });
 
 export const getProductPrice = (productId) => ({
@@ -21,13 +21,13 @@ export const getProductPrice = (productId) => ({
 });
 
 export const insertNewOrder = (customer_id) => ({
-	query: `INSERT INTO orders(customer_id, order_date) 
+	query: `INSERT INTO orders(customer_id, order_date)
          VALUES($1, NOW()) RETURNING order_id`,
 	values: [customer_id],
 });
 
 export const insertOrderedItem = (order_id, product_id, quantity, price) => ({
-	query: `INSERT INTO ordered_items(order_id, item_id, quantity, price_at_purchase) 
+	query: `INSERT INTO ordered_items(order_id, item_id, quantity, price_at_purchase)
          VALUES($1, $2, $3, $4)`,
 	values: [order_id, product_id, quantity, price],
 });
@@ -86,12 +86,12 @@ export const insertNewBatchesIntoInventory = (batches) => {
 
 	const query = `
     INSERT INTO inventory_batch (
-      ingredient_id, 
-      supplier_id, 
-      quantity_received, 
-      cost_price, 
+      ingredient_id,
+      supplier_id,
+      quantity_received,
+      cost_price,
       expiry_date
-    ) 
+    )
     VALUES ${placeholders.join(', ')}
 		RETURNING batch_id
   `;
@@ -121,8 +121,46 @@ export const insertRecipe = (ingredients_needed, itemId) => {
 	});
 
 	return {
-		query: `INSERT INTO recipe (item_id, ingredient_id, required_quantity) 
+		query: `INSERT INTO recipe (item_id, ingredient_id, required_quantity)
             VALUES ${placeholders.join(', ')};`,
 		values,
 	};
 };
+
+export const getAllCustomersQuery = () => ({
+	query: `SELECT customer_id, first_name, last_name, email, phone_number FROM customer ORDER BY customer_id ASC`,
+	values: [],
+});
+
+export const getAllOrdersQuery = () => ({
+	query: `
+        SELECT
+            o.order_id,
+            c.first_name || ' ' || c.last_name as customer_name,
+            o.order_date,
+            COUNT(oi.item_id) as total_items,
+            SUM(oi.quantity * oi.price_at_purchase) as total_price,
+            MAX(oi.order_status) as status
+        FROM orders o
+        JOIN customer c ON o.customer_id = c.customer_id
+        JOIN ordered_items oi ON o.order_id = oi.order_id
+        GROUP BY o.order_id, c.customer_id, o.order_date
+        ORDER BY o.order_date DESC
+    `,
+	values: [],
+});
+
+export const getAllRawMaterialsQuery = () => ({
+	query: `SELECT ingredient_id, ingredient_name, unit_type, current_stock FROM raw_material ORDER BY ingredient_id`,
+	values: [],
+});
+
+export const getProductsQuery = () => ({
+	query: `SELECT * FROM menu ORDER BY item_id;`,
+	values: [],
+});
+
+export const getCustomerDetailsQuery = (customerId) => ({
+	query: `SELECT * FROM customer WHERE customer_id = $1`,
+	values: [customerId],
+});

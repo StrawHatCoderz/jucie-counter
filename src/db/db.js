@@ -1,11 +1,16 @@
 import {
+	addNewMenuItem,
+	addNewRawMaterial,
 	createOrder,
+	getCustomerDetails,
+	getProducts,
+	getRawMaterials,
 	insertCustomer,
 	insertSupplier,
-	processOrder,
-	addNewRawMaterial,
+	listCustomers,
+	listOrders,
 	processInventory,
-	addNewMenuItem,
+	processOrder,
 } from './handlers.js';
 
 const BATCHES = [
@@ -24,6 +29,7 @@ const BATCHES = [
 		expiry_date: 6,
 	},
 ];
+
 const NEW_MENU_ITEM = {
 	name: 'Sapota',
 	type: 'JUICE',
@@ -34,20 +40,45 @@ const NEW_MENU_ITEM = {
 	],
 };
 
+const customer = {
+	firstName: 'Hawk',
+	lastName: 'Eye',
+	email: 'hawkEye@shield.com',
+	phoneNumber: '123123123',
+};
+
+const supplier = {
+	supplierName: 'HL Milk Products',
+	contactNumber: '31256745',
+	email: 'hmmilkproducts@boys.com',
+};
+
+const orders = [
+	{ id: 1, quantity: 1 },
+	{ id: 2, quantity: 1 },
+];
+
 export const testDB = async (client) => {
-	await insertCustomer(client, 'Hawk', 'Eye', 'hawkEye@shiled.com', '8923222');
-	await insertSupplier(
-		client,
-		'HL Milk Products',
-		'31256745',
-		'hmmilkproducts@boys.com'
-	);
-	await createOrder(client, 1, [
-		{ id: 1, quantity: 1 },
-		{ id: 2, quantity: 1 },
-	]);
+	await insertCustomer(client, customer);
+	await insertSupplier(client, supplier);
+	await createOrder(client, 1, orders);
 	await processOrder(client, 4);
 	await addNewRawMaterial(client, 'Sapota', 'UNIT');
 	await processInventory(client, BATCHES);
 	await addNewMenuItem(client, NEW_MENU_ITEM);
+
+	const products = await getProducts(client);
+	console.log('products available:', products.products.length);
+
+	const customers = await listCustomers(client);
+	console.log('customers available:', customers.customers.length);
+
+	const customerDetails = await getCustomerDetails(client, 2);
+	console.log('customer - firstName: ', customerDetails.customer.first_name);
+
+	const allOrders = await listOrders(client);
+	console.log('all orders: ', allOrders.orders.length);
+
+	const rawMaterial = await getRawMaterials(client);
+	console.log('raw materials available:', rawMaterial.rawMaterials.length);
 };
