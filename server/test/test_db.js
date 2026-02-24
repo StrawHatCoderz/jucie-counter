@@ -11,7 +11,7 @@ import {
 	listOrders,
 	processInventory,
 	processOrder,
-} from './handlers.js';
+} from '../src/db/handlers.js';
 
 const BATCHES = [
 	{

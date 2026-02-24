@@ -1,0 +1,8 @@
+supplier,./server/database/mock-data/supplier.csv
+raw_material,./server/database/mock-data/raw_material.csv
+inventory_batch,./server/database/mock-data/inventory_batch.csv
+menu,./server/database/mock-data/menu.csv
+recipe,./server/database/mock-data/recipe.csv
+customer,./server/database/mock-data/customer.csv
+orders,./server/database/mock-data/orders.csv
+ordered_items,./server/database/mock-data/ordered_items.csv

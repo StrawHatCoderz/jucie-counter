@@ -101,12 +101,13 @@ const createTables = async (database, tablesQuery) => {
 const insertValues = async (database, table, columns, rows) => {
 	const values = rows.map((row) => `(${row})`).join(',');
 	await database.queryArray(
-		`INSERT INTO ${table} (${columns}) VALUES ${values};`
+		`INSERT INTO ${table} (${columns}) VALUES ${values};`,
 	);
 };
 
 const loadMockData = async (database, metaData) => {
 	const content = await Deno.readTextFile(metaData);
+
 	const entries = csvParser(content);
 
 	for (const [table, csvFile] of entries) {
@@ -118,5 +119,5 @@ const loadMockData = async (database, metaData) => {
 
 export const initDB = async (database) => {
 	await createTables(database, QUERY);
-	await loadMockData(database, './database/setup/metaData.csv');
+	await loadMockData(database, './server/database/setup/metaData.csv');
 };
