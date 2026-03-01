@@ -1,9 +1,9 @@
 {
   "tasks": {
-    "setup": "deno -A setup.js",
-    "dev": "deno -A main.js",
-    "dev:watch": "deno -A --watch main.js",
-    "test:watch": "deno -A --watch test"
+    "setup": "deno -A server/setup.js",
+    "dev": "deno -A server/main.js",
+    "dev:watch": "deno -A --watch server/main.js",
+    "test:watch": "deno -A --watch server/test"
   },
   "imports": {
     "@db/postgres": "jsr:@db/postgres@^0.19.5",
