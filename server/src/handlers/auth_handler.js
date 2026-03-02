@@ -22,5 +22,5 @@ export const login = async (context) => {
 
 	setCookie(context, 'customer', JSON.stringify(result.customer));
 
-	return context.redirect('/', 303);
+	return context.redirect('/menu', 303);
 };
