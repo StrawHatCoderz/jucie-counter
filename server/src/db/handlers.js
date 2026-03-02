@@ -1,5 +1,6 @@
 import {
 	deductRawMaterialsForOrder,
+	findCustomerQuery,
 	getAllCustomersQuery,
 	getAllOrdersQuery,
 	getAllRawMaterialsQuery,
@@ -31,6 +32,21 @@ export const insertCustomer = async (database, customer) => {
 		return { success: true, id: result };
 	} catch (error) {
 		return { success: false, error };
+	}
+};
+
+export const findCustomer = async (database, customer) => {
+	const { query, values } = findCustomerQuery(customer);
+	try {
+		const result = await database.queryObject(query, values);
+		if (!result.rowCount) {
+			return { success: false, error: 'invalid customer' };
+		}
+
+		return { success: true, customer: result.rows[0] };
+	} catch (error) {
+		console.log(error);
+		return { success: false, error: 'invalid customer' };
 	}
 };
 

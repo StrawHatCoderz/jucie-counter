@@ -9,6 +9,15 @@ export const insertNewCustomer = ({
 	values: [firstName, lastName, email, phoneNumber],
 });
 
+export const findCustomerQuery = ({ email }) => ({
+	query: `
+		SELECT first_name, last_name, email, phone_number
+		FROM customer
+		WHERE email = $1
+	`,
+	values: [email],
+});
+
 export const insertNewSupplier = ({ supplierName, contactNumber, email }) => ({
 	query: `INSERT INTO supplier(supplier_name, contact_number, email)
          VALUES($1, $2, $3)`,
