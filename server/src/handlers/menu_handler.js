@@ -8,3 +8,9 @@ export const serveMenu = async (context) => {
 
 	return context.json(response.products);
 };
+
+export const handleOrder = async (context) => {
+	const payload = await context.req.body;
+	console.log(payload);
+	return context.redirect('/menu');
+};
